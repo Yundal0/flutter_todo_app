@@ -11,10 +11,14 @@ import '../../app/utils/bottom_sheet.dart';
 
 class FolderDetailsPage extends StatefulWidget {
   final String folderName;
+  final String todos;
   final int folderColor;
 
-  const FolderDetailsPage(
-      {super.key, required this.folderName, required this.folderColor});
+  FolderDetailsPage(
+      {super.key,
+      required this.folderName,
+      required this.folderColor,
+      required this.todos});
 
   @override
   State<FolderDetailsPage> createState() => _FolderDetailsPageState();
@@ -26,7 +30,9 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.black,
         leading: TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Row(
@@ -45,7 +51,6 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
             ],
           ),
         ),
-        backgroundColor: Colors.transparent,
         actions: [
           IconButton(
             onPressed: () {
@@ -63,8 +68,19 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
             ),
           )
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size(36, 36),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  widget.folderName,
+                  style: AppTextStyle.headlineLarge(Color(widget.folderColor)),
+                )),
+          ),
+        ),
       ),
-      backgroundColor: Colors.black,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -80,26 +96,9 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                         return ListView.builder(
                           itemCount: db.folderList.length + 1,
                           itemBuilder: (BuildContext context, int index) {
-                            if (index == 0) {
-                              //! 폴더 이름
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 12),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    widget.folderName,
-                                    style: AppTextStyle.headlineLarge(
-                                        Color(widget.folderColor)),
-                                  ),
-                                ),
-                              );
-                            } else {
-                              //! To Do List
-                              return TodoListTile(
-                                todoTitle: '안녕',
-                              );
-                            }
+                            return TodoListTile(
+                              todoTitle: '안녕',
+                            );
                           },
                         );
                       },
@@ -115,7 +114,9 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        // 투두앱 생성 메서드
+                      },
                       child: Row(
                         children: [
                           Icon(
@@ -123,9 +124,12 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                             color: Color(widget.folderColor),
                           ),
                           AppGap.size8,
-                          Text('새로운 할 일',
-                              style: AppTextStyle.titleLarge(
-                                  Color(widget.folderColor))),
+                          Text(
+                            '새로운 할 일',
+                            style: AppTextStyle.titleLarge(
+                              Color(widget.folderColor),
+                            ),
+                          ),
                         ],
                       ),
                     ),

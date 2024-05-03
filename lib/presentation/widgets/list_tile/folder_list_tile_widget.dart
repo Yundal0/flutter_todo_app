@@ -9,9 +9,10 @@ import 'package:flutter_todo_app/presentation/pages/folder_detail_page.dart';
 class FolderListTile extends StatelessWidget {
   int folderColor;
   String folderName;
+  String todos;
 
   FolderListTile(
-      {super.key, required this.folderColor, required this.folderName});
+      {super.key, required this.folderColor, required this.folderName, required this.todos});
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +22,7 @@ class FolderListTile extends StatelessWidget {
           builder: (context) => FolderDetailsPage(
             folderName: folderName,
             folderColor: folderColor,
+            todos: todos
           ),
         ));
       },
@@ -46,7 +48,7 @@ class FolderListTile extends StatelessWidget {
             ),
             Row(
               children: [
-                Text('0', style: AppTextStyle.bodyLarge(AppColor.neutral30)),
+                Text(todos, style: AppTextStyle.bodyLarge(AppColor.neutral30)),
                 AppGap.size8,
                 const Icon(Icons.arrow_forward, color: AppColor.neutral30),
               ],

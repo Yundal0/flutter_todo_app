@@ -7,7 +7,7 @@ abstract class AppTextStyle {
   static TextStyle headlineLarge([Color color = AppColor.neutral00]) =>
       TextStyle(
         fontFamily: 'PretendardVariable',
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: FontWeight.bold,
         color: color,
         letterSpacing: -0.2,

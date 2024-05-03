@@ -22,10 +22,17 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     final myBox = Hive.box('mybox');
+
+    // db.deleteAllFolders();
+    // db.updateDataBase();
+
     if (myBox.get("FOLDERLIST") == null) {
       db.createInitialData();
+      print('createInitialData');
     } else {
       db.loadData();
+      print('loadData');
+      print(db.folderList);
     }
   }
 
@@ -72,11 +79,11 @@ class _HomePageState extends State<HomePage> {
                         return ListView.builder(
                           itemCount: db.folderList.length,
                           itemBuilder: (BuildContext context, int index) {
-                            print(
-                                'FolderIndex $index: [ ${db.folderList[index][0]}, ${db.folderList[index][1]} ]');
+                            var folderList = db.folderList[index];
                             return FolderListTile(
-                                folderColor: db.folderList[index][0],
-                                folderName: db.folderList[index][1]);
+                                folderColor: folderList[0],
+                                folderName: folderList[1],
+                                todos: folderList[2].length.toString());
                           },
                         );
                       },

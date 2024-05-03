@@ -15,9 +15,11 @@ class AddFolderPage extends StatefulWidget {
 }
 
 class _AddFolderPageState extends State<AddFolderPage> {
+  Database db = Database();
   int selectedColor = AppColor.primaryBlueHex;
   TextEditingController controller = TextEditingController();
-  Database db = Database();
+  List<String> ongoingTodos = [];
+  List<String> completedTodos = [];
 
   @override
   void initState() {
@@ -29,7 +31,8 @@ class _AddFolderPageState extends State<AddFolderPage> {
 
   void saveNewFolder() {
     if (controller.text.isNotEmpty) {
-      db.addFolder(selectedColor, controller.text);
+      db.addFolder(
+          selectedColor, controller.text, ongoingTodos, completedTodos);
       controller.clear();
       Navigator.of(context).pop();
     }

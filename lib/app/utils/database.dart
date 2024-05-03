@@ -18,7 +18,12 @@ class Database extends ChangeNotifier {
 
   void createInitialData() {
     folderList = [
-      [AppColor.primaryBlueHex, "할 일"],
+      {
+        "folderColor": AppColor.primaryBlueHex,
+        "folderName": "할 일",
+        "ongingTodos": [], 
+        "completedTodos": []
+      },
     ];
     updateDataBase();
   }
@@ -28,8 +33,9 @@ class Database extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addFolder(int color, String name) {
-    folderList.add([color, name]);
+  void addFolder(int color, String name, List<String> ongoingTodos,
+      List<String> completedTodos) {
+    folderList.add([color, name, ongoingTodos, completedTodos]);
     updateDataBase();
   }
 
@@ -38,8 +44,13 @@ class Database extends ChangeNotifier {
     notifyListeners();
   }
 
-    void removeFolder(String name) {
+  void removeFolder(String name) {
     folderList.removeWhere((item) => item[1] == name);
-    updateDataBase();  // DB 업데이트 및 변경 사항 알림
+    updateDataBase(); // DB 업데이트 및 변경 사항 알림
+  }
+
+  void deleteAllFolders() {
+    folderList.clear(); // 모든 폴더 정보를 리스트에서 제거
+    updateDataBase(); // 변경 사항을 데이터베이스에 반영
   }
 }
