@@ -4,27 +4,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_todo_app/app/config/app_color.dart';
 import 'package:flutter_todo_app/app/config/app_gap.dart';
 import 'package:flutter_todo_app/app/config/app_text_style.dart';
+import 'package:flutter_todo_app/app/utils/database.dart';
 import 'package:flutter_todo_app/presentation/pages/folder_detail_page.dart';
 
 class FolderListTile extends StatelessWidget {
+  int folderIndex;
   int folderColor;
   String folderName;
-  String todos;
 
   FolderListTile(
-      {super.key, required this.folderColor, required this.folderName, required this.todos});
+      {super.key,
+      required this.folderIndex,
+      required this.folderColor,
+      required this.folderName,});
 
   @override
   Widget build(BuildContext context) {
+    Database db = Database();
+
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => FolderDetailsPage(
-            folderName: folderName,
-            folderColor: folderColor,
-            todos: todos
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => FolderDetailsPage(
+                folderIndex: folderIndex,
+                folderName: folderName,
+                folderColor: folderColor,
+                ),
           ),
-        ));
+        );
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 6),
@@ -48,7 +56,8 @@ class FolderListTile extends StatelessWidget {
             ),
             Row(
               children: [
-                Text(todos, style: AppTextStyle.bodyLarge(AppColor.neutral30)),
+                Text('${db.folderList[folderIndex][2].length}',
+                    style: AppTextStyle.bodyLarge(AppColor.neutral30)),
                 AppGap.size8,
                 const Icon(Icons.arrow_forward, color: AppColor.neutral30),
               ],

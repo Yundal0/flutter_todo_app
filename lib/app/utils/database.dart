@@ -7,8 +7,10 @@ class Database extends ChangeNotifier {
   static final Database _instance = Database._internal();
   final Box _myBox = Hive.box('mybox');
 
-  //! 리스트 생성
+  //! 초기 설정
   List<dynamic> folderList = [];
+  List<dynamic> ongoingTodos = [];
+  List<dynamic> completedTodos = [];
 
   Database._internal();
 
@@ -19,38 +21,64 @@ class Database extends ChangeNotifier {
   void createInitialData() {
     folderList = [
       {
-        "folderColor": AppColor.primaryBlueHex,
         "folderName": "할 일",
-        "ongingTodos": [], 
+        "folderColor": AppColor.primaryBlueHex,
+        "ongingTodos": [],
         "completedTodos": []
       },
     ];
     updateDataBase();
   }
 
+  //! CREATE
+  void createFolder(String folderName, int folderColor,
+      List<dynamic> ongoingTodos, List<dynamic> completedTodos) {
+    folderList.add([folderName, folderColor, ongoingTodos, completedTodos]);
+    updateDataBase();
+  }
+
+  void createTodo(int folderIndex, String todoTitle) {
+    folderList[folderIndex][2].add([todoTitle, false]);
+    updateDataBase();
+  }
+
+  //! READ
   void loadData() {
     folderList = _myBox.get("FOLDERLIST") ?? [];
     notifyListeners();
   }
 
-  void addFolder(int color, String name, List<String> ongoingTodos,
-      List<String> completedTodos) {
-    folderList.add([color, name, ongoingTodos, completedTodos]);
-    updateDataBase();
-  }
-
+  //! UPDATE
   void updateDataBase() {
     _myBox.put("FOLDERLIST", folderList);
     notifyListeners();
   }
 
+  //! DELETE
   void removeFolder(String name) {
-    folderList.removeWhere((item) => item[1] == name);
-    updateDataBase(); // DB 업데이트 및 변경 사항 알림
+    folderList.removeWhere((item) => item[0] == name);
+    updateDataBase();
+  }
+
+  void removeTodo(int index) {
+    folderList.removeAt(index);
+    updateDataBase();
   }
 
   void deleteAllFolders() {
-    folderList.clear(); // 모든 폴더 정보를 리스트에서 제거
-    updateDataBase(); // 변경 사항을 데이터베이스에 반영
+    folderList.clear(); 
+    updateDataBase(); 
+  }
+
+  //! 기타 기능
+  void removeTodoFromFolder(int folderIndex, int todoIndex) {
+    folderList[folderIndex][2].removeAt(todoIndex);
+    updateDataBase();
+    notifyListeners();
+  }
+
+  void checkBoxChanged(bool? value, int index) {
+    folderList[index][3] = folderList[index][4];
+    updateDataBase();
   }
 }

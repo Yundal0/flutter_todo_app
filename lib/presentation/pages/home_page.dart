@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors, avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_todo_app/app/config/app_color.dart';
 import 'package:flutter_todo_app/app/config/app_text_style.dart';
+import 'package:flutter_todo_app/app/utils/bottom_sheet.dart';
 import 'package:flutter_todo_app/app/utils/database.dart';
-import 'package:flutter_todo_app/presentation/widgets/bottom_nav_bar_widget.dart';
+import 'package:flutter_todo_app/presentation/pages/add_folder_page.dart';
 import 'package:flutter_todo_app/presentation/widgets/list_tile/folder_list_tile_widget.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
@@ -32,12 +34,13 @@ class _HomePageState extends State<HomePage> {
     } else {
       db.loadData();
       print('loadData');
-      print(db.folderList);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    print(db.folderList);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -45,22 +48,6 @@ class _HomePageState extends State<HomePage> {
           '나의 폴더',
           style: AppTextStyle.headlineMedium(),
         ),
-        // actions: [
-        //   Padding(
-        //     padding: EdgeInsets.all(12),
-        //     child: GestureDetector(
-        //       onTap: () {
-        //         setState(() {
-        //           isEditMode = !isEditMode; // 편집 모드 토글
-        //         });
-        //       },
-        //       child: Text(
-        //         '편집',
-        //         style: AppTextStyle.bodyLarge(AppColor.primaryBlue),
-        //       ),
-        //     ),
-        //   )
-        // ],
       ),
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -79,11 +66,12 @@ class _HomePageState extends State<HomePage> {
                         return ListView.builder(
                           itemCount: db.folderList.length,
                           itemBuilder: (BuildContext context, int index) {
-                            var folderList = db.folderList[index];
+                            var folderList = db.folderList;
                             return FolderListTile(
-                                folderColor: folderList[0],
-                                folderName: folderList[1],
-                                todos: folderList[2].length.toString());
+                              folderIndex: index,
+                              folderName: folderList[index][0],
+                              folderColor: folderList[index][1],
+                            );
                           },
                         );
                       },
@@ -93,7 +81,20 @@ class _HomePageState extends State<HomePage> {
               ),
 
               //! 하단바
-              BottomNavBar()
+              Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton(
+                  onPressed: () {
+                    bottomSheet(
+                      context: context,
+                      child: const AddFolderPage(),
+                      height: MediaQuery.of(context).size.height * 0.92,
+                    );
+                  },
+                  child: Text('폴더 추가',
+                      style: AppTextStyle.bodyLarge(AppColor.primaryBlue)),
+                ),
+              )
             ],
           ),
         ),

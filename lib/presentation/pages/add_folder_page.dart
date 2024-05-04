@@ -5,7 +5,7 @@ import 'package:flutter_todo_app/app/config/app_color.dart';
 import 'package:flutter_todo_app/app/config/app_gap.dart';
 import 'package:flutter_todo_app/app/config/app_text_style.dart';
 import 'package:flutter_todo_app/app/utils/database.dart';
-import 'package:flutter_todo_app/presentation/widgets/layout/container_layout_widget.dart';
+import 'package:flutter_todo_app/presentation/widgets/container_layout_widget.dart';
 
 class AddFolderPage extends StatefulWidget {
   const AddFolderPage({super.key});
@@ -18,8 +18,6 @@ class _AddFolderPageState extends State<AddFolderPage> {
   Database db = Database();
   int selectedColor = AppColor.primaryBlueHex;
   TextEditingController controller = TextEditingController();
-  List<String> ongoingTodos = [];
-  List<String> completedTodos = [];
 
   @override
   void initState() {
@@ -31,8 +29,8 @@ class _AddFolderPageState extends State<AddFolderPage> {
 
   void saveNewFolder() {
     if (controller.text.isNotEmpty) {
-      db.addFolder(
-          selectedColor, controller.text, ongoingTodos, completedTodos);
+      db.createFolder(
+         controller.text, selectedColor, db.ongoingTodos, db.completedTodos);
       controller.clear();
       Navigator.of(context).pop();
     }

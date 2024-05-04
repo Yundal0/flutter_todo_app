@@ -5,14 +5,19 @@ import 'package:flutter_todo_app/app/config/app_color.dart';
 import 'package:flutter_todo_app/app/config/app_gap.dart';
 import 'package:flutter_todo_app/app/config/app_text_style.dart';
 import 'package:flutter_todo_app/app/utils/database.dart';
+import 'package:flutter_todo_app/presentation/pages/completed_todo_page.dart';
 import 'package:provider/provider.dart';
 
 class DialogBox extends StatelessWidget {
-  final String folderName; // 폴더 이름
-  final int folderColor; // 폴더 색상
+  final int folderIndex;
+  final String folderName;
+  final int folderColor;
 
   const DialogBox(
-      {super.key, required this.folderName, required this.folderColor});
+      {super.key,
+      required this.folderIndex,
+      required this.folderName,
+      required this.folderColor});
 
   @override
   Widget build(BuildContext context) {
@@ -60,12 +65,23 @@ class DialogBox extends StatelessWidget {
 
               //! 완료된 항목 보기
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  // bottomSheet 창 닫기
+                  Navigator.of(context).pop();
+                  
+                  // 완료된 항목 페이지로 이동
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => CompletedTodoPage(
+                      folderIndex: folderIndex,
+                      folderName: folderName,
+                      folderColor: folderColor,
+                    ),
+                  ));
+                },
                 child: Container(
                   padding: EdgeInsets.all(14.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    // color: Colors.blue
                   ),
                   child: Row(
                     children: [

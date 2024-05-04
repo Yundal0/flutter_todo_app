@@ -1,24 +1,27 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_todo_app/app/config/app_color.dart';
 import 'package:flutter_todo_app/app/config/app_gap.dart';
 import 'package:flutter_todo_app/app/config/app_text_style.dart';
+import 'package:flutter_todo_app/app/utils/bottom_sheet.dart';
 import 'package:flutter_todo_app/app/utils/database.dart';
+import 'package:flutter_todo_app/presentation/pages/add_todo_page.dart';
 import 'package:flutter_todo_app/presentation/widgets/dialog_box_widget.dart';
 import 'package:flutter_todo_app/presentation/widgets/list_tile/todo_list_tile_widget.dart';
 import 'package:provider/provider.dart';
 
-import '../../app/utils/bottom_sheet.dart';
-
 class FolderDetailsPage extends StatefulWidget {
+  final int folderIndex;
   final String folderName;
-  final String todos;
   final int folderColor;
 
-  FolderDetailsPage(
-      {super.key,
-      required this.folderName,
-      required this.folderColor,
-      required this.todos});
+  const FolderDetailsPage({
+    super.key,
+    required this.folderIndex,
+    required this.folderName,
+    required this.folderColor,
+  });
 
   @override
   State<FolderDetailsPage> createState() => _FolderDetailsPageState();
@@ -27,8 +30,37 @@ class FolderDetailsPage extends StatefulWidget {
 class _FolderDetailsPageState extends State<FolderDetailsPage> {
   Database db = Database();
 
+  void checkBoxChanged(bool? value, int index) {
+    var ongoingTodo = db.folderList[widget.folderIndex][2];
+
+    setState(() {
+      ongoingTodo[index][1] = !ongoingTodo[index][1];
+    });
+    moveToCompleted(value, index);
+    db.updateDataBase();
+  }
+
+  void moveToCompleted(bool? value, int index) {
+    if (value == true) {
+      var ongoingTodo = db.folderList[widget.folderIndex][2][index];
+      db.folderList[widget.folderIndex][2].removeAt(index);
+      db.folderList[widget.folderIndex][3].add(ongoingTodo);
+      db.updateDataBase();
+    }
+  }
+
+  void removeTodoFromList(int index) {
+    db.removeTodoFromFolder(widget.folderIndex, index); // 수정된 메서드 호출
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('===== FolderDetailsPage =====');
+    print('folderIndex : ${widget.folderIndex}');
+    print('folderName : ${widget.folderName}');
+    print('folderColor : ${widget.folderColor}');
+    print('ongoingTodo : ${db.folderList[widget.folderIndex][2]}');
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -57,6 +89,7 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
               bottomSheet(
                 context: context,
                 child: DialogBox(
+                    folderIndex: widget.folderIndex,
                     folderName: widget.folderName,
                     folderColor: widget.folderColor),
                 height: MediaQuery.of(context).size.height * 0.35,
@@ -83,28 +116,24 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.only(left: 8, top: 8),
           child: Stack(
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Consumer<Database>(
-                      builder: (context, value, child) {
-                        return ListView.builder(
-                          itemCount: db.folderList.length + 1,
-                          itemBuilder: (BuildContext context, int index) {
-                            return TodoListTile(
-                              todoTitle: '안녕',
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
+              Consumer<Database>(
+                builder: (context, value, child) {
+                  return ListView.builder(
+                    itemCount: db.folderList[widget.folderIndex][2].length,
+                    itemBuilder: (BuildContext context, int index) {
+                      var ongoingTodo = db.folderList[widget.folderIndex][2];
+                      return TodoListTile(
+                        todoTitle: ongoingTodo[index][0],
+                        taskCompleted: ongoingTodo[index][1],
+                        onChanged: (value) => checkBoxChanged(value, index),
+                        deleteFunction: (context) => removeTodoFromList(index),
+                      );
+                    },
+                  );
+                },
               ),
 
               //! 하단바
@@ -115,7 +144,13 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                   children: [
                     TextButton(
                       onPressed: () {
-                        // 투두앱 생성 메서드
+                        bottomSheet(
+                          context: context,
+                          child: AddTodoPage(
+                            folderIndex: widget.folderIndex,
+                          ),
+                          height: MediaQuery.of(context).size.height * 0.92,
+                        );
                       },
                       child: Row(
                         children: [
